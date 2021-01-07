@@ -190,11 +190,25 @@
 * Lombok
 
 자바 버전 11로 시작
-● 자바는 여전히 무료다
+* 자바는 여전히 무료다
 
 ## 이벤트 도메인 구현
 
+
 ## 이벤트 비즈니스 로직
+
+Event 생성 API
+* 다음의 입력 값을 받는다.
+  * name
+  * description
+  * beginEnrollmentDateTime
+  * closeEnrollmentDateTime
+  * beginEventDateTime
+  * endEventDateTime
+  * location (optional) 이게 없으면 온라인 모임
+  * basePrice (optional)
+  * maxPrice (optional)
+  * limitOfEnrollment
 
 # 섹션 2. 2. 이벤트 생성 API 개발
 
