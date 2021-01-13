@@ -206,8 +206,8 @@ Event 생성 API
   * beginEventDateTime
   * endEventDateTime
   * location (optional) 이게 없으면 온라인 모임
-  * basePrice (optional)
-  * maxPrice (optional)
+  * basePrice (optional) //
+  * maxPrice (optional) // 
   * limitOfEnrollment
 
 # 섹션 2. 2. 이벤트 생성 API 개발
