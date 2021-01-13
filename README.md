@@ -205,7 +205,7 @@ Event 생성 API
   * closeEnrollmentDateTime
   * beginEventDateTime
   * endEventDateTime
-  * location (optional) 이게 없으면 온라인 모임
+  * location (optional)   이게 없으면 온라인 모임
   * basePrice (optional)
   * maxPrice (optional)
   * limitOfEnrollment
