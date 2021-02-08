@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 public class Event {
 
+    private Integer id;
+
     private String name;
 
     private String description;
@@ -23,5 +25,9 @@ public class Event {
     private int maxPrice;  // (optional)
 
     private int limitOfEnrollment;
+
+    private boolean offline; // 오프라인인지 온라인인지
+    private boolean free; // 유료인지 무료인지
+    private EventStatus eventStatus = EventStatus.DRAFT; // 이벤트 상태
 
 }
