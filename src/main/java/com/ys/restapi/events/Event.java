@@ -1,7 +1,12 @@
 package com.ys.restapi.events;
 
+import lombok.*;
+
 import java.time.LocalDateTime;
 
+@Getter @Setter
+@EqualsAndHashCode(of = "id")
+@Builder @NoArgsConstructor @AllArgsConstructor
 public class Event {
 
     private Integer id;
