@@ -2,13 +2,16 @@ package com.ys.restapi.events;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter @Setter
 @EqualsAndHashCode(of = "id")
 @Builder @NoArgsConstructor @AllArgsConstructor
+@Entity
 public class Event {
 
+    @Id @GeneratedValue
     private Integer id;
 
     private String name;
@@ -33,6 +36,8 @@ public class Event {
 
     private boolean offline; // 오프라인인지 온라인인지
     private boolean free; // 유료인지 무료인지
+
+    @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT; // 이벤트 상태
 
 }
