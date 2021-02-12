@@ -217,10 +217,20 @@ Event 생성 API
   * closeEnrollmentDateTime
   * beginEventDateTime
   * endEventDateTime
-  * location (optional) 이게 없으면 온라인 모임
-  * basePrice (optional) //
-  * maxPrice (optional) // 
-  * limitOfEnrollment
+  * location (optional) 장소. 이게 없으면 온라인 모임
+  * basePrice (optional) // 참가비
+  * maxPrice (optional) //  
+  * limitOfEnrollment // 몇명까지 등록가능한지 제한 
+
+
+* basePrice와 maxPrice의 경우의 수와 각각 로직 
+|basePrice|maxPrice| |
+|--------|------|----|
+|0 |100 선착순 등록|
+|0 |0 |무료|
+|100 |0 |무제한 경매 (높은 금액 낸 사람이 등록)|
+|100 |200 |제한가 선착순 등록  ,<br>처음 부터 200을 낸 사람은 선 등록.<br>100을 내고 등록할 수 있으나 더 많이낸 사람에 의해 밀려날 수 있음.|
+
 
 # 섹션 2. 2. 이벤트 생성 API 개발
 
