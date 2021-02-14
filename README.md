@@ -297,11 +297,88 @@ Event 생성 API
 
 ## 이벤트 Repository
 
+스프링 데이터 JPA
+  * JpaRepository 상속 받아 만들기
+
+Enum을 JPA 맵핑시 주의할 것
+  * @Enumerated(EnumType.STRING)
+
+@MockBean
+  * Mockito를 사용해서 mock 객체를 만들고 빈으로 등록해 줌.
+  * (주의) 기존 빈을 테스트용 빈이 대체 한다.
+
+테스트 할 것
+
+* 입력값들을 전달하면 JSON 응답으로 201이 나오는지 확인.
+  * Location 헤더에 생성된 이벤트를 조회할 수 있는 URI 담겨 있는지 확인.
+  * id는 DB에 들어갈 때 자동생성된 값으로 나오는지 확인
+
+
 ## 입력값 제한하기
 
+#### 입력값 제한
+* id (자동생성) 또는 입력 받은 데이터로 계산해야 하는 값들은 입력을 받지 않아야 한다.
+  * 입력 받지 말아야 되는 값은 제한해야한다.  
+  * ex) id 값이 100이면 안되고 free 값이 true이면 안될 경우의 테스트 
+  * ```java
+     mockMvc.perform(post("/api/events/")
+              ... // 생략
+              .andExpect(jsonPath("id").value(Matchers.not(100)))
+              .andExpect(jsonPath("free").value(Matchers.not(true)))
+    ```
+
+* EventDto 적용하여 컨트롤러의 입력값을 테스트 
+  * DTO -> 도메인 객체로 값 복사
+    *  ModelMapper 라이브러리 
+    * ```xml
+      <dependency>
+        <groupId>org.modelmapper</groupId>
+        <artifactId>modelmapper</artifactId>
+        <version>2.3.1</version>
+      </dependency>
+      ```
+    * 공용으로 사용할 수 있기 때문에 Bean으로 등록하여 사용하는 경우가 좋다.
+
+
+#### 통합 테스트로 전환
+* @WebMvcTest 빼고 다음 애노테이션 추가
+  * @SpringBootTest
+  * @AutoConfigureMockMvc
+  * EventControllerTests내의  Repository @MockBean 코드 제거
+    
 ## 입력값 이외에 에러 발생
 
+#### ObjectMapper 커스터마이징
+* spring.jackson.deserialization.fail-on-unknown-properties=true
+  * ObjectMapper 확장 기능 
+  * deserialization할때 unknown-propertie가 있으면 실패하도록 설정 
+  * 우리가 지정하지 않은(받을 수 없는) 프로퍼티들을 받으면 (예를들어 dto에 없는) 에러가 발생하여 400 badrequest를 리턴한다 
+  * json을 object로 변환하는 과정을 deserialization
+  * 객체를 json으로 변환하는 과정을 serialization
+
+#### 테스트 할 것 
+* 입력값으로 누가 id나 eventStatus, offline, free 이런 데이터까지 같이 주면?
+  * Bad_Request로 응답​ vs 받기로 한 값 이외는 무시
+
 ## Bad Request 처리
+
+#### @Valid와 BindingResult (또는 Errors)
+* BindingResult는 항상 @Valid 바로 다음 인자로 사용해야 함. (스프링 MVC)
+* @NotNull, @NotEmpty, @Min, @Max, ... 사용해서 입력값 바인딩할 때 에러 확인할
+수 있음 - 입력값 검증 
+
+#### 도메인 Validator 만들기
+* Validator​ 인터페이스 없이 만들어도 상관없음
+테스트 설명 용 애노테이션 만들기
+* @Target, @Retention
+
+
+#### 테스트 할 것
+* 입력 데이터가 이상한 경우 Bad_Request로 응답
+  * 입력값이 이상한 경우 에러
+  * 비즈니스 로직으로 검사할 수 있는 에러
+  * 에러 응답 메시지에 에러에 대한 정보가 있어야 한다
+
 
 ## Bad Request 응답
 
