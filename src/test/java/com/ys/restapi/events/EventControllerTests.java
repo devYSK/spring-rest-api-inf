@@ -45,7 +45,8 @@ public class EventControllerTests {
                 .description("REST API Development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2021, 2, 12, 22, 24))
                 .closeEnrollmentDateTime(LocalDateTime.of(2021, 2, 13, 22, 24))
-                .beginEnrollmentDateTime(LocalDateTime.of(2021, 2, 14, 22, 24))
+                .beginEventDateTime(LocalDateTime.of(2021, 2, 14, 22, 24))
+
                 .endEventDateTime(LocalDateTime.of(2021, 2, 15, 22, 24))
                 .basePrice(100)
                 .maxPrice(200)
@@ -62,9 +63,10 @@ public class EventControllerTests {
                 .andExpect(status().isCreated())  // 201 응답
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE))
-                .andExpect(jsonPath("id").value(Matchers.not(100)))
-                .andExpect(jsonPath("free").value(Matchers.not(true)))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
+                .andExpect(jsonPath("free").value(false))
+                .andExpect(jsonPath("offline").value(true))
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
 
         ;
     }
@@ -102,12 +104,12 @@ public class EventControllerTests {
     @Test
     @TestDescription("입력 값이 비어있는 경우 에러가 발생하는 테스트   ")
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
-            EventDto eventDto = EventDto.builder().build();
+        EventDto eventDto = EventDto.builder().build();
 
-            this.mockMvc.perform(post("/api/events")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(this.objectMapper.writeValueAsString(eventDto)))
-                    .andExpect(status().isBadRequest());
+        this.mockMvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest());
     }
 
 
@@ -138,8 +140,6 @@ public class EventControllerTests {
                 .andExpect(jsonPath("$[0].objectName").exists())
                 .andExpect(jsonPath("$[0].defaultMessage").exists())
                 .andExpect(jsonPath("$[0].code").exists())
-
-
 
 
         ;
