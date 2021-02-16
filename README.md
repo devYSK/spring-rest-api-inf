@@ -367,6 +367,26 @@ Enum을 JPA 맵핑시 주의할 것
 * @NotNull, @NotEmpty, @Min, @Max, ... 사용해서 입력값 바인딩할 때 에러 확인할
 수 있음 - 입력값 검증 
 
+* 어노테이션들을 이용하여 검증을 수행한 결과를 컨트롤러의 @Valid 어노테이션을 사용한 객체의 바로 다음 파라미터로 Errors 타입의 객체에다가 에러를 넣어준다. 
+  * JS303 valid 관련 사용하려면 `spring-boot-starter-validation` 의존성을 추가해주면 된다. 
+
+```java
+// Controller 내 메서드
+
+@PostMapping
+public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
+    if (errors.hasErrors()) {
+          return ResponseEntity.badRequest().build();
+    }
+    ...
+
+    return ...
+  }
+```
+
+#### 비즈니스 로직으로 입력
+
+
 #### 도메인 Validator 만들기
 * Validator​ 인터페이스 없이 만들어도 상관없음
 테스트 설명 용 애노테이션 만들기
@@ -382,13 +402,110 @@ Enum을 JPA 맵핑시 주의할 것
 
 ## Bad Request 응답
 
+Bad Request 응답 본문 만들기
+
+#### 커스텀 JSON Serializer 만들기
+* extends JsonSerializer<T> (Jackson JSON 제공)
+* @JsonComponent (스프링 부트 제공)
+  * 이 어노테이션을 사용하면 자동으로 빈으로 등록 된다. 
+  * 이러면 JsonSerializer를 상속받은 Serializer를 ObjectMapper에 등록이 된다. 
+ 
+#### BindingError
+* FieldError 와 GlobalError (ObjectError)가 있음
+* objectName
+* defaultMessage
+* code
+* field
+* rejectedValue
+
 ## 비즈니스 로직 적용
+* 비즈니스 로직 적용 됐는지 응답 메시지 확인
+  * offline과 free 값 확인
+
 
 ## 매개변수를 이용한 테스트
+
+#### 테스트 코드 리팩토링
+* 테스트에서 중복 코드 제거
+* 매개변수만 바꿀 수 있으면 좋겠는데?
+  * JUnitParams
+
+#### JUnitParams
+* https://github.com/Pragmatists/JUnitParams
+  * junit4가 제공하는 @Test를 사용해야 한다 
+    * junit5가 제공하는 @Test를 사용하면 오류가 난다 
+
+* JUnit5로 사용하는법 
+```xml
+<dependency>
+   <groupId>org.junit.jupiter</groupId>
+   <artifactId>junit-jupiter-params</artifactId>
+   <version>5.4.2</version>
+   <scope>test</scope>
+</dependency>
+```
+```java
+@ParameterizedTest
+@CsvSource({
+        "0, 0, true",
+        "0, 100, false",
+        "100, 0, false",
+})
+public void testFree(int basePrice, int maxPrice, boolean isFree) {
+    Event event = Event.builder()
+            .basePrice(basePrice)
+            .maxPrice(maxPrice)
+            .build();
+
+    event.update();
+
+    assertThat(event.isFree()).isEqualTo(isFree);
+}
+
+@ParameterizedTest
+@MethodSource("isOffline")
+public void testOffline(String location, boolean isOffline) {
+    Event event = Event.builder()
+            .location(location)
+            .build();
+
+    event.update();
+
+    assertThat(event.isOffline()).isEqualTo(isOffline);
+}
+
+private static Stream<Arguments> isOffline() {
+    return Stream.of(
+            Arguments.of("강남역", true),
+            Arguments.of(null, false),
+            Arguments.of("", false)
+    );
+}
+```
 
 # 섹션 3. 3. HATEOAS와 Self-Describtive Message 적용
 
 ## 스프링 HATEOAS 소개
+
+스프링 HATEOAS
+* https://docs.spring.io/spring-hateoas/docs/current/reference/html/
+* 링크 만드는 기능
+  * 문자열 가지고 만들기
+  * 컨트롤러와 메소드로 만들기
+* 리소스 만드는 기능
+  * 리소스: 데이터 + 링크
+* 링크 찾아주는 기능
+  * Traverson
+  * LinkDiscoverers
+* 링크
+  * HREF
+  * REL
+    * self
+    * profile
+    * update-event
+    * query-events
+
+
 
 ## 스프링 HATEOAS 적용
 
