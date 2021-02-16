@@ -493,21 +493,47 @@ private static Stream<Arguments> isOffline() {
   * 문자열 가지고 만들기
   * 컨트롤러와 메소드로 만들기
 * 리소스 만드는 기능
-  * 리소스: 데이터 + 링크
+  * `리소스: 데이터(응답본문) + 링크정보`
 * 링크 찾아주는 기능
   * Traverson
   * LinkDiscoverers
 * 링크
-  * HREF
-  * REL
+  * href
+  * REL(릴레이션, 현재 이 리소스와의 관계)
     * self
-    * profile
+    * profile (응답본문에 대한 문서의 링크)
     * update-event
     * query-events
 
+![](img/2021-02-16-18-37-24.png)
+
+* Rest Application 아키텍처 컴포넌트 중의 하나
+* 하이퍼미디어를 사용해서 애플리케이션 서버의 정보를 동적으로 클라이언트가 서버와의 정보를 주고 받을 수 방법이다.
 
 
 ## 스프링 HATEOAS 적용
+
+#### EventResource 만들기
+* extends ResourceSupport의 문제 
+  * @JsonUnwrapped로 해결
+  * extends Resource<T>로 해결
+
+* https://docs.spring.io/spring-hateoas/docs/1.0.1.RELEASE/reference/html/
+  * 버전이 바뀌면서 확인해야할 것
+
+> * ResourceSupport is now RepresentationModel
+> * Resource is now EntityModel
+> * Resources is now CollectionModel
+> * PagedResources is now PagedModel
+
+* ResourceSupport, Resource 객체가 1.2.1 버전부터 각각   
+   RepresentationModel, EntityModel로 변경
+
+#### 테스트 할 것
+* 응답에 HATEOA와 profile 관련 링크가 있는지 확인.
+  * self (view)
+  * update (만든 사람은 수정할 수 있으니까)
+  * events (목록으로 가는 링크)
 
 ## 스프링 REST Docs 소개
 

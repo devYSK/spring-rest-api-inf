@@ -2,7 +2,10 @@ package com.ys.restapi.events;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -50,9 +55,23 @@ public class EventController {
         event.update();
 
         Event newEvent = this.eventRepository.save(event);
-        URI createdUri = linkTo(EventController.class)
-                .slash(newEvent.getId()).toUri();
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
 
-        return ResponseEntity.created(createdUri).body(event);
+        URI createdUri = selfLinkBuilder.toUri();
+
+
+
+        Integer eventId = newEvent.getId();
+
+        EntityModel eventResource = EntityModel.of(newEvent);
+        eventResource.add(linkTo(EventController.class).slash(eventId).withSelfRel());
+        eventResource.add(linkTo(EventController.class).withRel("query-events"));
+        eventResource.add(selfLinkBuilder.withRel("update-event"));
+
+//        eventResource.add(linkTo(EventController.class).withRel("query-events"));
+//        eventResource.add(selfLinkBuilder.withSelfRel());
+//        eventResource.add(selfLinkBuilder.withRel("update-event"));
+
+        return ResponseEntity.created(createdUri).body(eventResource);
     }
 }

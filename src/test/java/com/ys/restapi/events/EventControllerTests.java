@@ -24,6 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+@SampleConfig
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,6 +42,7 @@ public class EventControllerTests {
     @Test
     @TestDescription("정상적으로 이벤트를 생성하는 테스트 ")
     public void createEvent() throws Exception {
+
         EventDto event = EventDto.builder()
                 .name("Spring")
                 .description("REST API Development with Spring")
@@ -63,12 +66,18 @@ public class EventControllerTests {
                 .andExpect(status().isCreated())  // 201 응답
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
                 .andExpect(jsonPath("free").value(false))
                 .andExpect(jsonPath("offline").value(true))
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
+                .andExpect(jsonPath("_links.self").exists())
+//                .andExpect(jsonPath("_link.profile").exists())
+                .andExpect(jsonPath("_links.query-events").exists())
+                .andExpect(jsonPath("_links.update-event").exists())
+
 
         ;
+
     }
 
     @Test
