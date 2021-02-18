@@ -30,6 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Controller
 @RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
 @RequiredArgsConstructor
+
 public class EventController {
 
     private final EventRepository eventRepository;
