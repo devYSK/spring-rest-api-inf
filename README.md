@@ -535,7 +535,126 @@ private static Stream<Arguments> isOffline() {
   * update (만든 사람은 수정할 수 있으니까)
   * events (목록으로 가는 링크)
 
+
+#### 테스트시 한글 깨짐 문제
+
+* https://jehuipark.github.io/spring/boot-2-2-x-mock-mvc-encoding-issue
+
+
+#### JSON으로 받을때 객체 이름 없이 받는법 
+
+### `@JsonUnwrapped 어노테이션`
+
+@Getter
+public class EventResource extends RepresentationModel {
+
+    @JsonUnwrapped
+    private Event event;
+
+    public EventResource(Event event) {
+        this.event = event;
+    }
+}
+
+```json
+{
+  "event" : -{
+    "id" : 1,
+    "name" : Spring,
+    "description" : REST API Development with Spring,
+    ...
+  },
+  "_links" : -{
+    "query-events" : -{
+      "href" : http://localhost/api/events
+      },
+    ...
+  }
+}
+```
+위와 같은 Json형태에서 객체 이름을 빼준다. (unwrapped)
+  * "event"를 뺀다 
+```json
+  {
+    "id" : 1,
+    "name" : Spring,
+    "description" : REST API Development with Spring,
+    ...
+  }
+  "_links" : -{
+    "query-events" : -{
+      "href" : http://localhost/api/events
+      },
+    ...
+  }
+}
+```
+
+EntityModel를 상속받은 Resource 객체는 @JsonUnwrapped를 사용하지 않아도
+unwrapped 된다. 
+
+```java
+EntityModel eventResource = EntityModel.of(newEvent);
+eventResource.add(linkTo(EventController.class).slash(eventwithSelfRel());
+eventResource.add(linkTo(EventController.class).withRel("query-events"));
+eventResource.add(selfLinkBuilder.withRel("update-event"));
+```
 ## 스프링 REST Docs 소개
+
+https://docs.spring.io/spring-restdocs/docs/2.0.2.RELEASE/reference/html5/
+
+이 라이브러리는 우리가 만든 테스트를 실행하면서 요청과 응답, 헤더 등의 정보를 사용하여 문서 조각을 만들 수 있다. (snippets라고 한다)
+
+문서조각을 만들어서 html로 restapi documentation을 만들 수 있다. 
+
+어떻게 스니펫(snippets)을 생성하는가?
+
+
+Rest docs랑 연동할 수 있는 것
+
+1. 테스트에서 사용하는 MockMvc도 연동가능
+2. 스프링 5부터 지원하는 WebTestClient을 사용하여 연동
+3. TestNG, JUnit5도 사용 가능 
+
+
+```java
+this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+	.andExpect(status().isOk())
+	.andDo(document("index", links( // 1 
+			linkWithRel("alpha").description("Link to the alpha resource"), // 2 
+			linkWithRel("bravo").description("Link to the bravo resource")))); // 3
+```
+1. document라는 메서드를 사용해서 현재 이 테스트를 실행한 결과(snippets)을 어떤 디렉토리 아래("index")에다가 만드는 것
+
+2.   
+
+
+#### REST Docs 코딩
+* andDo(document(“doc-name”, snippets))
+* snippets
+  * links​()
+  * requestParameters() + parameterWithName()
+  * pathParameters() + parametersWithName()
+  * requestParts() + partWithname()
+  * requestPartBody()
+  * requestPartFields()
+  * requestHeaders() + headerWithName()
+  * requestFields​() + fieldWithPath()
+  * responseHeaders() + headerWithName()
+  * responseFields​() + fieldWithPath()
+  * ...
+
+* Relaxed*
+
+* Processor
+  * preprocessRequest(prettyPrint())
+  * preprocessResponse(prettyPrint())
+  * ...
+
+
+#### Constraint
+● https://github.com/spring-projects/spring-restdocs/blob/v2.0.2.RELEASE/samples/res
+t-notes-spring-hateoas/src/test/java/com/example/notes/ApiDocumentation.java
 
 ## 스프링 REST Docs 적용
 
