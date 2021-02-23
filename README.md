@@ -273,7 +273,7 @@ Event 생성 API
   * profile 링크 추가
 
 ---
-
+---
 ### @RestController
 * @ResponseBody를 모든 메소드에 적용한 것과 동일하다.
 
