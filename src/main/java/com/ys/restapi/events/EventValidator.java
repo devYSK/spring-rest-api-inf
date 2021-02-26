@@ -29,7 +29,5 @@ public class EventValidator {
         //TODO beginEventDateTime
         //TODO closeEventDateTime
 
-        LocalDateTime beginEventDateTime = eventDto.getBeginEventDateTime();
-
     }
 }
