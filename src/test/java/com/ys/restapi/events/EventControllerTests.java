@@ -156,5 +156,15 @@ public class EventControllerTests {
         ;
     }
 
+    //TODO: 에러 발생시 처리 테스트
+    @Test
+    public void next() throws Exception {
+        //given
+
+        //when
+
+        //then
+
+    }
 
 }
