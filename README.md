@@ -273,7 +273,7 @@ Event 생성 API
   * profile 링크 추가
 
 ---
----
+
 ### @RestController
 * @ResponseBody를 모든 메소드에 적용한 것과 동일하다.
 
@@ -626,7 +626,15 @@ this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
 ```
 1. document라는 메서드를 사용해서 현재 이 테스트를 실행한 결과(snippets)을 어떤 디렉토리 아래("index")에다가 만드는 것
 
-2.   
+
+#### 사용법
+
+@AutoConfigureRestDocs 어노테이션을 테스트 클래스에 붙여준다
+```java
+@AutoConfigureRestDocs
+public class EventControllerTests {
+}
+```
 
 
 #### REST Docs 코딩
@@ -657,6 +665,44 @@ this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
 t-notes-spring-hateoas/src/test/java/com/example/notes/ApiDocumentation.java
 
 ## 스프링 REST Docs 적용
+
+REST Docs 자동 설정
+* @AutoConfigureRestDocs
+
+RestDocMockMvc 커스터마이징
+  * RestDocsMockMvcConfigurationCustomizer 구현한 빈 등록
+  * @TestConfiguration
+
+테스트 할 것
+* API 문서 만들기
+  * 요청 본문 문서화
+  * 응답 본문 문서화
+  * 링크 문서화
+    * profile 링크 추가
+  * 응답 헤더 문서화
+
+
+#### 이쁘게 문서 출력하기
+
+```java
+@TestConfiguration
+public class RestDocConfiguration {
+
+    @Bean
+    public RestDocsMockMvcConfigurationCustomizer restDocsMockMvcConfigurationCustomizer() {
+
+        return new RestDocsMockMvcConfigurationCustomizer() {
+            @Override
+            public void customize(MockMvcRestDocumentationConfigurer configurer) {
+                configurer.operationPreprocessors()
+                        .withRequestDefaults(prettyPrint())
+                        .withResponseDefaults(prettyPrint());
+            }
+        };
+    }
+}
+
+```
 
 ## 스프링 REST Docs 각종 문서 조각 생성하기
 

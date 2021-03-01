@@ -1,6 +1,7 @@
 package com.ys.restapi.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ys.restapi.common.RestDocConfiguration;
 import com.ys.restapi.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -32,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@Import(RestDocConfiguration.class)
 public class EventControllerTests {
 
 
