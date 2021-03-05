@@ -682,7 +682,9 @@ RestDocMockMvc 커스터마이징
   * 응답 헤더 문서화
 
 
-#### 이쁘게 문서 출력하기
+#### 이쁘게 문서 출력하기 [JSON 포맷팅]
+
+
 
 ```java
 @TestConfiguration
@@ -702,7 +704,26 @@ public class RestDocConfiguration {
     }
 }
 
+// 테스트 클래스
+
+@Import(RestDocConfiguration.class)
+public class EventControllerTests {
+...
+}
 ```
+
+* @Import(RestDocConfiguration.class) 어노테이션을 붙여야 한다
+
+요청 필드 문서화
+* requestFields() + fieldWithPath()
+* responseFields() + fieldWithPath()
+* requestHeaders() + headerWithName()
+* responseHedaers() + headerWithName()
+* links() + linkWithRel()
+
+Relaxed 접두어
+* 장점: 문서 일부분만 테스트 할 수 있다.
+* 단점: 정확한 문서를 생성하지 못한다
 
 ## 스프링 REST Docs 각종 문서 조각 생성하기
 
