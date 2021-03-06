@@ -725,6 +725,48 @@ Relaxed 접두어
 * 장점: 문서 일부분만 테스트 할 수 있다.
 * 단점: 정확한 문서를 생성하지 못한다
 
+24 PostgreSQL 적용
+    
+테스트 할 때는 계속 H2를 사용해도 좋지만 애플리케이션 서버를 실행할 때 PostgreSQL을
+사용하도록 변경하자.
+/scripts.md 참고
+1. PostgreSQL 드라이버 의존성 추가
+```
+<dependency>
+<groupId>org.postgresql</groupId>
+<artifactId>postgresql</artifactId>
+</dependency>
+```
+
+2. 도커로 PostgreSQL 컨테이너 실행
+> docker run --name ndb -p 5432:5432 -e POSTGRES_PASSWORD=pass -d postgres
+
+3. 도커 컨테이너에 들어가보기
+> docker exec -i -t ndb bash
+su - postgres
+psql -d postgres -U postgres
+\l
+\dt
+
+4. 데이터소스 설정
+application.properties
+
+
+
+spring.datasource.username=postgres
+spring.datasource.password=pass
+spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+5. 하이버네이트 설정
+application.properties
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.properties.hibernate.format_sql=true
+logging.level.org.hibernate.SQL=DEBUG
+
+
 ## 스프링 REST Docs 각종 문서 조각 생성하기
 
 ## 스프링 REST Docs 문서 빌드
