@@ -715,15 +715,52 @@ public class EventControllerTests {
 * @Import(RestDocConfiguration.class) 어노테이션을 붙여야 한다
 
 요청 필드 문서화
+
 * requestFields() + fieldWithPath()
 * responseFields() + fieldWithPath()
 * requestHeaders() + headerWithName()
 * responseHedaers() + headerWithName()
 * links() + linkWithRel()
 
+
+-> 
+```java
+.andDo(document("create-event",
+        links(
+              linkWithRel("self").description("link to self"),
+              linkWithRel("query-events").description("link to query events"),
+              linkWithRel("update-event").description("link to update an existing event")
+              ),
+        requestHeaders(
+                headerWithName(HttpHeaders.ACCEPT).description("accept header"),
+                headerWithName(HttpHeaders.CONTENT_TYPE).description("content header")
+        ),
+        requestFields(
+                fieldWithPath("name").description("Name of new event"),
+                ...
+        ),
+        responseHeaders(
+                headerWithName(HttpHeaders.LOCATION).description("Location header"),
+                ....
+        ),
+        relaxedResponseFields(
+                fieldWithPath("id").description("id of new event"),
+                ....
+                )
+      ))
+```
+
+* 모든 필드를 문서화 해야 하는데 일부분 필드들만 문서화 하고 싶다면?
+  * relaxed 라는 접두어를 붙인 메소드를 사용하면 된다.
+  * 이걸 사용하지 않고 모든 필드를 문서화 하지 않는다면, 오류가 난다.
+
 Relaxed 접두어
 * 장점: 문서 일부분만 테스트 할 수 있다.
 * 단점: 정확한 문서를 생성하지 못한다
+
+* relaxed 접두어를 사용하거나,  
+  fieldWithPath 메소드로 일일이 links를 채워준다  
+ 
 
 24 PostgreSQL 적용
     
