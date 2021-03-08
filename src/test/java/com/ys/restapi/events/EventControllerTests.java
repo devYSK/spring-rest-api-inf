@@ -110,7 +110,8 @@ public class EventControllerTests {
                                 headerWithName(HttpHeaders.LOCATION).description("Location header"),
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description("Content Type")
                         ),
-                        relaxedResponseFields(
+//                        relaxedResponseFields( // 이렇게도 사용 가능
+                        responseFields(
                                 fieldWithPath("id").description("id of new event"),
                                 fieldWithPath("name").description("Name of new event"),
                                 fieldWithPath("description").description("description of new event"),
@@ -124,7 +125,11 @@ public class EventControllerTests {
                                 fieldWithPath("limitOfEnrollment").description("limit of enrollment of begin of new event"),
                                 fieldWithPath("free").description("it tells if this event is free or not "),
                                 fieldWithPath("offline").description("it tells if this event is offline or not "),
-                                fieldWithPath("eventStatus").description("event status")
+                                fieldWithPath("eventStatus").description("event status"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.query-events.href").description("link to query event list"),
+                                fieldWithPath("_links.update-event.href").description("link to update existing event")
+
 
                                 )
                 ))

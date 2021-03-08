@@ -682,9 +682,11 @@ RestDocMockMvc 커스터마이징
   * 응답 헤더 문서화
 
 
+
+## 스프링 REST Docs 각종 문서 조각 생성하기
+
+
 #### 이쁘게 문서 출력하기 [JSON 포맷팅]
-
-
 
 ```java
 @TestConfiguration
@@ -762,8 +764,15 @@ Relaxed 접두어
   fieldWithPath 메소드로 일일이 links를 채워준다  
  
 
-24 PostgreSQL 적용
-    
+
+## 스프링 REST Docs 문서 빌드
+
+스프링 REST Docs
+* https://docs.spring.io/spring-restdocs/docs/2.0.2.RELEASE/reference/html5/
+* pom.xml에 메이븐 플러그인 설정
+
+## 테스트용 DB와 설정 분리하기
+
 테스트 할 때는 계속 H2를 사용해도 좋지만 애플리케이션 서버를 실행할 때 PostgreSQL을
 사용하도록 변경하자.
 /scripts.md 참고
@@ -803,12 +812,6 @@ spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 spring.jpa.properties.hibernate.format_sql=true
 logging.level.org.hibernate.SQL=DEBUG
 
-
-## 스프링 REST Docs 각종 문서 조각 생성하기
-
-## 스프링 REST Docs 문서 빌드
-
-## 테스트용 DB와 설정 분리하기
 
 ## API 인덱스 만들기
 
