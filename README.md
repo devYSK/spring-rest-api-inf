@@ -844,7 +844,20 @@ public ResourceSupport root() {
   index.add(linkTo(EventController.class).withRel("events"));
   return index;
 }
+
+// to
+
+@GetMapping("/api")
+public RepresentationModel index() {
+        var index = new RepresentationModel<>();
+        index.add(linkTo(EventController.class).withRel("events"));
+        return index;
+        }
 ```
+
+
+# !!!!!!
+* ResourceSupport 클래스가 RepresentationModel클래스로 대체되었다. !!!
 
 테스트 컨트롤러 리팩토링
 * 중복 코드 제거 에러 리소스
