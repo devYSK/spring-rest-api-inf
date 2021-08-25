@@ -813,6 +813,24 @@ spring.jpa.properties.hibernate.format_sql=true
 logging.level.org.hibernate.SQL=DEBUG
 
 
+* ## 테스트 클래스에 어노테이션을 붙여야 한다 
+
+* @ActiveProfiles("프로퍼티즈파일명")
+  * 이러면 테스트 파일에서만 사용할 프로퍼티즈를 해결 가능 
+
+```java
+@SampleConfig
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@AutoConfigureRestDocs
+@Import(RestDocConfiguration.class)
+@ActiveProfiles("test")
+public class EventControllerTests {
+  ...
+}
+```
+
 ## API 인덱스 만들기
 
 인덱스 핸들러
