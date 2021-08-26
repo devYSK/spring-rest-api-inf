@@ -104,11 +104,43 @@ public class EventController {
         EntityModel<Event> eventResource = EventResource.of(event);
         eventResource.add(Link.of("/docs/index.html#resources-events-list").withRel("profile"));
         eventResource.add(linkTo(EventController.class).slash(event.getId()).withSelfRel()); // of로 만들어서 self 링크를 추가해줘야한다.
-        log.info(eventResource.toString());
         return ResponseEntity.ok(eventResource);
 
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity updateEvent(@PathVariable Integer id,
+                                      @RequestBody @Valid EventDto eventDto,
+                                      Errors errors
+                                      ) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+
+        if (optionalEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (errors.hasErrors()) {
+            return badRequest(errors);
+        }
+
+        this.eventValidator.validate(eventDto, errors);
+
+        if (errors.hasErrors())
+        {
+            return badRequest(errors);
+        }
+
+        Event existingEvent = optionalEvent.get();
+        this.modelMapper.map(eventDto, existingEvent);
+        Event savedEvent = eventRepository.save(existingEvent); // 서비스 레이어에서 트랙잰셩 계층 안이 아니므로 명시적으로 세이브 해줘야 한다.
+
+        EntityModel<Event> entityModel = EventResource.of(savedEvent);
+        entityModel.add(new Link("/docs/index.html#resources-events-update").withRel("profile"));
+        entityModel.add(linkTo(EventController.class).slash(savedEvent.getId()).withSelfRel()); // of로 만들어서 self 링크를 추가해줘야한다.
+
+        return ResponseEntity.ok(entityModel);
+
+    }
 
 
 }
