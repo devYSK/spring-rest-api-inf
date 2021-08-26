@@ -1,5 +1,6 @@
 package com.ys.restapi.events;
 
+import com.ys.restapi.accounts.Account;
 import lombok.*;
 
 import javax.persistence.*;
@@ -36,6 +37,10 @@ public class Event {
 
     private boolean offline; // 오프라인인지 온라인인지
     private boolean free; // 유료인지 무료인지
+
+
+    @ManyToOne
+    private Account manager;
 
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT; // 이벤트 상태

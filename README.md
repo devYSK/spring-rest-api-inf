@@ -912,6 +912,33 @@ public RepresentationModel index() {
 
 ## Account 도메인 추가
 
+* OAuth2로 인증을 하려면 일단 Account 부터
+  * id
+
+  *  email
+
+  *  password
+
+  *  roels
+* AccountRoles
+  * ADMIN, USER
+
+* JPA 맵핑
+
+  * @Table(“Users”)
+
+* JPA enumeration collection mapping
+
+  * @ElementCollection(fetch = FetchType.EAGER)
+  
+  * @Enumerated(EnumType.STRING) private
+  
+  * Set<AccountRole> roles;
+
+* Event에 owner 추가
+  * @ManyToOne
+
+  * Account manager;
 ## 스프링 시큐리티 적용
 
 ## 예외 테스트
