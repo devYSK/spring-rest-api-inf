@@ -1005,7 +1005,31 @@ public RepresentationModel index() {
     * ignore ​
       * /docs/**
       * /favicon.ico
-  *  PathRequest.toStaticResources() 사용하기
+  * PathRequest.toStaticResources() 사용하기
+
+```java
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .mvcMatchers("/docs/index.html").anonymous()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).anonymous();
+    }
+
+    // 시큐리티 인증이 필요없는 부분을 설정.
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().mvcMatchers("/docs/index.html");
+        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations()); // 정적인 리소스 무시
+
+    }
+```
+* 위 두 코드는 동일하지만, 위와 같이 처리할 경우 성능 상으론 web configure가 더 낫다. 
+  * filter chain을 탈 때 두 메서드 기능이 다르기 때문. 
+  * 요청 처리 필터 갯수가 다르다. 
+
+
+
 ## 스프링 시큐리티 폼 인증 설정
 
 ## 스프링 시큐리티 OAuth2 인증 서버 설정
