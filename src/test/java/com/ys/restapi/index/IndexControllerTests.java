@@ -1,5 +1,6 @@
 package com.ys.restapi.index;
 
+import com.ys.restapi.common.BasicControllerTests;
 import com.ys.restapi.common.RestDocConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,16 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@Import(RestDocConfiguration.class)
-@ActiveProfiles("test")
-public class IndexControllerTests {
-
-    @Autowired
-    MockMvc mockMvc;
+public class IndexControllerTests extends BasicControllerTests {
 
     @Test
     public void index() throws Exception {
