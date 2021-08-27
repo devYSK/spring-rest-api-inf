@@ -283,6 +283,37 @@ public class EventControllerTests extends BasicControllerTests {
         ;
     }
 
+    @Test
+    @DisplayName("30개의 이벤트를 10개씩, 두번째 페이지 조회하기")
+    public void queryEventsWithAuthentication() throws Exception {
+        //Given
+        //이벤트 30개..
+        IntStream.range(0, 30).forEach(this::generateEvent);
+
+        //When
+        //10개로 2번째 페이지 조회(get)
+        this.mockMvc.perform(get("/api/events")
+                        .header(HttpHeaders.AUTHORIZATION, getBearerToken())
+                        .param("page", "1") //2번째 페이지
+                        .param("size", "10") //10개 묶음
+                        .param("sort", "name,DESC") //이름 역순으로 요청
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                //eventList [0]첫번째 요소에서 self link가 있는가?
+                //하나의 세부 item 요소에 연결해주는 link가 생성된것이다.
+//                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists()) //profile link 있는가? 확인
+                .andExpect(jsonPath("_links.create-event").exists())
+                .andDo(document("query-events"))
+        //TODO link, page들에 대한 설명을담은 문서 추가로 생성해야함
+        ;
+    }
+
+
+
     private Event generateEvent(int index) {
         Event event = Event.builder()
                 .name("Spring" + index)

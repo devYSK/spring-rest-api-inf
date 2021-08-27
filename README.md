@@ -1214,6 +1214,165 @@ public class AppProperties {
 
 ## 현재 사용자 조회
 
+* 현재 요청한 유저의 사용자 정보를 참조할 수 있다.
+
+* SecurityContext
+  * 자바 ThreadLocal 기반 구현으로 인증 정보를 담고 있다.
+
+  *  인증 정보 꺼내는 방법: Authentication authentication =
+* SecurityContextHolder.getContext().getAuthentication();
+
+* @AuthenticationPrincipal spring.security.User user
+  * 인증 안한 경우에 null
+
+  * 인증 한 경우에는 username과 authorities 참조 가능
+
+* spring.security.User를 상속받는 클래스를 구현하면
+  * 도메인 User를 받을 수 있다.
+
+  * @AuthenticationPrincipa me.whiteship.user.UserAdapter
+
+  * Adatepr.getUser().getId()
+
+* SpEL을 사용하면
+* @AuthenticationPrincipa(expression=”account”) me.whiteship.user.Account
+```java
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@AuthenticationPrincipal(expression = "account")
+public @interface CurrentUser { } 커스텀
+```
+* 애노테이션을 만들면
+  * @CurrentUser Account account
+
+  *  엇? 근데 인증 안하고 접근하면..?
+
+* expression = "#this == 'anonymousUser' ? null : account"
+  * 현재 인증 정보가 anonymousUse 인 경우에는 null을 보내고 아니면 “account”를
+꺼내준다.
+
+* 조회 API 개선
+
+  * 현재 조회하는 사용자가 owner인 경우에 update 링크 추가 (HATEOAS)
+
+* 수정 API 개선 현재 사용자가 이벤트 owner가 아닌 경우에
+  * 403 에러 발생
+
+
+* 인증된 현재 사용자의 정보를 조회할려면 ? 
+```java
+ public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler){
+
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        User principal=authentication.getPrincipal(); // AccountService에서 리턴한 스프링 시큐리티의 User 객체가 나온다
+        }
+```
+
+* 컨트롤러에서 다음과 같이 주입 받을수도 있따
+* 인증된 사용자 정보 
+  * @AuthenticationPrincipal User user
+
+```java
+@GetMapping //get으로 조회한다... get으로 작성해놓고 post요청하면 405error발생함
+public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler,
+                                      @AuthenticationPrincipal User user
+                                      ){
+```
+
+* 스프링 시큐리티의 User 인터페이스가 아닌 우리 프로젝트의 Account 객체를 받고싶다면?
+  * UserDetailsService의 구현체인 AccountService의 loadUserByUsername 메서드에서 Account를 리턴해야 한다.
+
+```java
+
+// AccountAdapter 클래스 생성 (spring security User를 상속받는 )
+@Getter
+public class AccountAdapter extends User {
+
+  private Account account;
+
+  public AccountAdapter(Account account) {
+    super(account.getEmail(), account.getPassword(), authorities(account.getRoles()));
+
+  }
+
+  private static Collection<? extends GrantedAuthority> authorities(Set<AccountRole> roles) {
+    return roles.stream()
+            .map(r -> new SimpleGrantedAuthority("ROLE_" + r.name()))
+            .collect(Collectors.toList());
+  }
+}
+// 그리고 아래와 같이 적용해서 리턴한다 
+
+
+@Service
+@RequiredArgsConstructor
+public class AccountService implements UserDetailsService {
+  ...
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+    Account account = accountRepository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException(username));
+
+    return new User(account.getEmail(), account.getPassword(), authorities(account.getRoles()));
+  }
+  ...
+}
+
+// 위의 기존의 코드를 아래와 같이 바꾼다 
+
+@Service
+@RequiredArgsConstructor
+public class AccountService implements UserDetailsService {
+  ...
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+    Account account = accountRepository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException(username));
+
+    return new AccountAdapter(account); // 이부분  
+  }
+  ...
+}
+
+```
+
+* 이러면 @AuthenticationPrincipal 어노테이션이 붙은 객체에 AccountAdapter를 주입해준다. 
+
+* ## AccountAdapter 말고 Account를 받을라면? 
+```java
+@GetMapping //get으로 조회한다... get으로 작성해놓고 post요청하면 405error발생함
+public ResponseEntity queryEvents(Pageable pageable,
+                                  PagedResourcesAssembler<Event> assembler, 
+                                  @AuthenticationPrincipal(expression = "account") Account account){
+        ...
+}
+
+// 다음과 같은 어노테이션을 사용해서 코드를 줄일수도 있따. 
+
+
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@AuthenticationPrincipal(expression = "expression = \"#this == 'anonymousUser' ? null : account\"")
+//현재 인증 정보가 anonymousUse 인 경우에는 null을 보내고 아니면 “account”를 꺼내준다
+public @interface CurrentUser {
+}
+
+// 코드량이 줄었따!  
+  
+@GetMapping //get으로 조회한다... get으로 작성해놓고 post요청하면 405error발생
+public ResponseEntity queryEvents(Pageable pageable,
+                                    PagedResourcesAssembler<Event> assembler,
+                                    @CurrentUser Account account){
+        ...
+}
+
+
+```
+
 ## 출력값 제한하기
 
 # 섹션 6. 보강
