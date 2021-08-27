@@ -1133,7 +1133,84 @@ public RepresentationModel index() {
 
 ## 문자열을 외부 설정으로 빼내기
 
+* 기본 유저 만들기
+  *  ApplicationRunner
+  * Admin
+  * User
+
+
+* 외부 설정으로 기본 유저와 클라이언트 정보 빼내기
+* @ConfigurationProperties
+
+* 하드코딩을 안하는것. 
+  * 하드코딩을 안하고 외부 설정파일에서 문자열을 주입받는다.  
+* 다음과 같이 클래스를 만들어 빈으로 설정하고 properties파일에서 바인딩을 받는다. 
+* application-properties에서 바인딩할 문자열 지정.
+
+* 다음 의존성을 추가하고, 프로젝트를 한번 빌드 해야 protperties파일에서 인식이 된다. 
+```manifest
+      <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
+
+```
+
+```java
+
+@Component
+@ConfigurationProperties(prefix = "my-app")
+@Getter @Setter
+public class AppProperties {
+
+    // 외부에서 바인딩 받을것들임
+
+    @NotEmpty
+    private String adminUsername;
+
+    @NotEmpty
+    private String adminPassword;
+
+    @NotEmpty
+    private String userUsername;
+
+    @NotEmpty
+    private String userPassword;
+
+    @NotEmpty
+    private String clientId;
+
+    @NotEmpty
+    private String clientSecret;
+}
+```
+
 ## 이벤트 API 점검
+* 토큰 발급 받기
+  * POST /oauth/token
+  * BASIC authentication 헤더○ client Id(myApp) + client secret(pass)
+
+  * 요청 본문 폼
+    * username: admin@email.com
+    * password: admin
+    * grant_type: password
+
+* 토큰 갱신하기
+  *  POST /oauth/token
+  * BASIC authentication 헤더
+    * client Id(myApp) + client secret(pass)
+  * 요청 본문 폼
+    * token: 처음에 발급받았던 refersh 토큰
+    * grant_type: refresh_token
+
+* 이벤트 목록 조회 API
+
+  * 로그인 했을 때
+  *  이벤트 생성 링크 제공
+
+* 이벤트 조회
+  * 로그인 했을 때
+    * 이벤트 Manager인 경우에는 이벤트 수정 링크 제공
 
 ## 현재 사용자 조회
 

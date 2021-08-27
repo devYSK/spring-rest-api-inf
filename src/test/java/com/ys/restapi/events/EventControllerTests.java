@@ -6,6 +6,7 @@ import com.ys.restapi.accounts.AccountRole;
 import com.ys.restapi.accounts.AccountService;
 import com.ys.restapi.common.BasicControllerTests;
 import com.ys.restapi.common.TestDescription;
+import com.ys.restapi.config.AppProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +44,10 @@ public class EventControllerTests extends BasicControllerTests {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    AppProperties appProperties;
+
 
     @Before
     public void setUp() {

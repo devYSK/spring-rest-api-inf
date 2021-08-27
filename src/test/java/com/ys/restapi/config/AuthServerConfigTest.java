@@ -22,27 +22,27 @@ public class AuthServerConfigTest extends BasicControllerTests {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AppProperties appProperties;
+
     @Test
     @TestDescription("인증 토큰 발급 받는 테스트 ")
     public void getAuthToken() throws Exception {
 
-        String username = "youngsoo2@naver.com";
-        String password = "youngsoo";
+        // 이 메서드만 테스트 할때는 어카운트 세이브 과정을 지워야함.
+
         Account youngsoo = Account.builder()
-                .email(username)
-                .password(password)
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
 
         this.accountService.saveAccount(youngsoo);
 
-        String clientId = "myApp";
-        String clientSecret = "pass";
-
         this.mockMvc.perform(post("/oauth/token")
-                        .with(httpBasic(clientId, clientSecret)) // 시큐리티 테스트 디펜던시 가 있어야함
-                        .param("username", username)
-                        .param("password", password)
+                        .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret())) // 시큐리티 테스트 디펜던시 가 있어야함
+                        .param("username", appProperties.getUserUsername())
+                        .param("password", appProperties.getUserPassword())
                         .param("grant_type", "password")
                 ) // 기본적으로 핸들러가 적용이 된다
                 .andExpect(status().isOk())
